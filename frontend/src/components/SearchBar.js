@@ -1,14 +1,17 @@
 import React from 'react';
 
-function SearchBar({ searchTerm, onSearch }) {
+const SearchBar = () => {
   return (
-    <input
-      type="text"
-      value={searchTerm}
-      onChange={onSearch}
-      placeholder="Search for services or salons..."
-    />
-  );
-}
-
-export default SearchBar;
+<div className="navbar-search">
+        <input 
+          type="text" 
+          className="search-input" 
+          placeholder="Search for salons or services..." 
+        />
+        <button type="submit" className="search-btn">Search</button>
+      </div>
+      );
+    };
+    
+    export default SearchBar;
+    
