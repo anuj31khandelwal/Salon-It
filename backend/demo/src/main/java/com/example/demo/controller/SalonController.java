@@ -30,4 +30,9 @@ public class SalonController {
     public List<Appointment> getAppointments(@PathVariable Long id) {
         return salonService.getAppointments(id);
     }
+
+    @GetMapping("/search")
+    public List<Salon> searchSalons(@RequestParam String location, @RequestParam String service) {
+        return salonService.searchSalons(location, service);
+    }
 }

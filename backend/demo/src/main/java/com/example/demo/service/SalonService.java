@@ -32,4 +32,8 @@ public class SalonService {
     public List<Appointment> getAppointments(Long salonId) {
         return appointmentRepository.findBySalonId(salonId);
     }
+
+    public List<Salon> searchSalons(String location, String service) {
+        return salonRepository.findByLocationAndService(location, service);
+    }
 }

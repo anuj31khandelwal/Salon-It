@@ -60,6 +60,11 @@ const services = [
 
 const ServiceList = () => {
   return (
+    <div className="service-section">
+      <h2 className="service-section-title">Services Available</h2>
+      <p className="service-section-description">
+        Explore various services offered by salons
+      </p>
     <div className="service-list">
       {services.map((service, index) => (
         <div key={index} className="service-card">
@@ -68,6 +73,7 @@ const ServiceList = () => {
           <p className="service-description">{service.description}</p>
         </div>
       ))}
+    </div>
     </div>
   );
 };

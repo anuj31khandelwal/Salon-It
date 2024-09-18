@@ -52,10 +52,6 @@ const Footer = () => {
               <a href="#"><Youtube size={20} /></a>
               <a href="#"><Facebook size={20} /></a>
             </div>
-            <div className="app-buttons">
-              <a href="#"><img src="/api/placeholder/120/40" alt="App Store" /></a>
-              <a href="#"><img src="/api/placeholder/135/40" alt="Google Play" /></a>
-            </div>
           </div>
         </div>
         <div className="footer-bottom">

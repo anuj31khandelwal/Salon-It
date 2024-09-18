@@ -4,23 +4,16 @@ import jakarta.persistence.*;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "Appointments")
+@Table(name="Appointments")
 public class Appointment {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "salon_id")
     private Long salonId;
-
-    @Column(name = "service_id")
     private Long serviceId;
-
-    @Column(name = "appointment_time")
     private LocalDateTime appointmentTime;
-
-    @Column(name = "confirmed")
     private boolean confirmed;
 
     // Getters and Setters

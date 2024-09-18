@@ -1,41 +1,52 @@
 package com.example.demo.model;
 
 import jakarta.persistence.*;
+import java.util.List;
 
 @Entity
+@Table(name="Salons")
 public class Salon {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     private String name;
-    private String specialty;  // e.g., "Haircut", "Shaving", etc.
+    private String location;
 
-    // Constructors, Getters, and Setters
-    public Salon() {}
-    public Salon(String name, String specialty) {
-        this.name = name;
-        this.specialty = specialty;
-    }
+    @OneToMany(mappedBy = "salon", cascade = CascadeType.ALL)
+    private List<Service> services;
+
+    // Getters and Setters
     public Long getId() {
         return id;
     }
+
     public void setId(Long id) {
         this.id = id;
     }
+
     public String getName() {
         return name;
     }
+
     public void setName(String name) {
         this.name = name;
     }
-    public String getSpecialty() {
-        return specialty;
-    }
-    public void setSpecialty(String specialty) {
-        this.specialty = specialty;
+
+    public String getLocation() {
+        return location;
     }
 
-    // Getters and Setters
-    
+    public void setLocation(String location) {
+        this.location = location;
+    }
+
+    public List<Service> getServices() {
+        return services;
+    }
+
+    public void setServices(List<Service> services) {
+        this.services = services;
+    }
 }
