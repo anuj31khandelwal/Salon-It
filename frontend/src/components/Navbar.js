@@ -19,6 +19,7 @@
 
 // export default Navbar;
 import React from 'react';
+import {Link} from 'react-router-dom';
 
 function Navbar() {
   return (
@@ -28,10 +29,10 @@ function Navbar() {
           <img src="/assets/logo.jpg" alt="Salon-It Logo" className="navbar-logo" />
         </div>
         <div className="navbar-right">
-          <a href="#" className="navbar-link">Investor Relations</a>
-          <a href="#" className="navbar-link">Add salon</a>
-          <a href="#" className="navbar-link">Log in</a>
-          <a href="#" className="navbar-link">Sign up</a>
+          <Link to="/investor-relations" className="navbar-link">Investor Relations</Link>
+          <Link to="/add-salon" className="navbar-link">Add Salon</Link>
+          <Link to="/login" className="navbar-link">Login</Link>
+          <Link to="/signin" className="navbar-link">Sign In</Link>
         </div>
       </div>
     </nav>

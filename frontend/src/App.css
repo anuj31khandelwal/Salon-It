@@ -172,6 +172,101 @@ main {
   text-decoration: underline;
 }
 
+.salon-page {
+  background-color: #1a202c;
+  color: white;
+  min-height: 100vh;
+  padding: 4rem;
+}
+
+.salon-header {
+  text-align: center;
+  margin-bottom: 3rem;
+}
+
+.salon-header h1 {
+  font-size: 2.5rem;
+  font-weight: bold;
+  margin-bottom: 1rem;
+}
+
+.salon-header h2 {
+  font-size: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.promotion {
+  font-size: 1.25rem;
+  margin-bottom: 2rem;
+}
+
+.button-container {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+}
+
+.register-button, .login-button {
+  font-weight: bold;
+  padding: 0.5rem 1rem;
+  border-radius: 0.25rem;
+  cursor: pointer;
+}
+
+.register-button {
+  background-color: #3182ce;
+  color: white;
+}
+
+.register-button:hover {
+  background-color: #2c5282;
+}
+
+.login-button {
+  background-color: white;
+  color: #1a202c;
+}
+
+.login-button:hover {
+  background-color: #e2e8f0;
+}
+
+.contact-info {
+  margin-top: 1rem;
+}
+
+.signup-section {
+  background-color: white;
+  color: #1a202c;
+  border-radius: 0.5rem;
+  padding: 2rem;
+  max-width: 48rem;
+  margin: 0 auto;
+}
+
+.signup-section h3 {
+  font-size: 1.5rem;
+  font-weight: bold;
+  margin-bottom: 1rem;
+}
+
+.document-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+  margin-top: 1.5rem;
+}
+
+.document-list li {
+  display: flex;
+  align-items: center;
+}
+
+.scissors-icon {
+  color: #48bb78;
+  margin-right: 0.5rem;
+}
+
 .service-section{
   padding: 0px 80px 0px 80px;
 }
@@ -436,4 +531,149 @@ main {
   .footer-section {
     width: 100%;
   }
+}
+.login-wrapper {
+  max-width: 400px;
+  margin: 80px auto;
+  padding: 20px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  background-color: #fff;
+}
+
+.login-title {
+  text-align: center;
+  margin-bottom: 20px;
+  color: #333;
+}
+
+.login-user-type-toggle,
+.login-method-toggle {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 20px;
+}
+
+.login-toggle-btn {
+  padding: 10px 20px;
+  margin: 0 5px;
+  border: none;
+  background-color: #f0f0f0;
+  cursor: pointer;
+  border-radius: 4px;
+}
+
+.login-toggle-btn.login-active {
+  background-color: #ff4d6d;
+  color: white;
+}
+
+.login-form {
+  display: flex;
+  flex-direction: column;
+}
+
+.login-input {
+  padding: 10px;
+  margin-bottom: 10px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.login-google-btn {
+  background-color: #4285F4;
+  color: white;
+  padding: 10px;
+  width: 100%;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.login-submit-btn {
+  background-color: #ff4d6d;
+  color: white;
+  padding: 10px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.login-submit-btn:hover,
+.login-google-btn:hover {
+  opacity: 0.9;
+}
+
+.signup-wrapper {
+  max-width: 400px;
+  margin: 80px auto;
+  padding: 20px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  background-color: #fff;
+}
+
+.signup-title {
+  text-align: center;
+  margin-bottom: 20px;
+  color: #333;
+}
+
+.signup-user-type-toggle,
+.signup-method-toggle {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 20px;
+}
+
+.signup-toggle-btn {
+  padding: 10px 20px;
+  margin: 0 5px;
+  border: none;
+  background-color: #f0f0f0;
+  cursor: pointer;
+  border-radius: 4px;
+}
+
+.signup-toggle-btn.signup-active {
+  background-color: #ff4d6d;
+  color: white;
+}
+
+.signup-form {
+  display: flex;
+  flex-direction: column;
+}
+
+.signup-input {
+  padding: 10px;
+  margin-bottom: 10px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.signup-google-btn {
+  background-color: #4285F4;
+  color: white;
+  padding: 10px;
+  width: 100%;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.signup-submit-btn {
+  background-color: #ff4d6d;
+  color: white;
+  padding: 10px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.signup-submit-btn:hover,
+.signup-google-btn:hover {
+  opacity: 0.9;
 }

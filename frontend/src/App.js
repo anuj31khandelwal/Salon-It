@@ -1,13 +1,16 @@
 import React, { useState } from 'react';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import Navbar from './components/Navbar';
+import AddSalon from './components/AddSalon';
+import Login from './components/Login';
+import Signin from './components/Signin';
 import SearchBar from './components/SearchBar';
 import SalonList from './components/SalonList';
 import ServiceList from './components/ServiceList';
 import MobileView from './components/MobileView';
 import Recommendations from './components/Recommendations';
 import Footer from './components/Footer';
-import { searchSalons } from './api';  // New import for API function
+import { searchSalons } from './api';  // Import for the API function
 import './App.css';
 
 function App() {
@@ -35,41 +38,48 @@ function App() {
 
   return (
     <div className="app">
-      <Navbar />
-      <main>
-        <section className="hero">
-          <div className="hero-content">
-            <h1>Salon-It</h1>
-            <h2>Find the perfect salon</h2>
-            <form onSubmit={handleSearch} className="search-form">
-              <div className="location-input">
-                <input
-                  type="text"
-                  placeholder="Location"
-                  value={location}
-                  onChange={(e) => setLocation(e.target.value)}
-                />
-              </div>
-              <div className="search-input">
-                <input
-                  type="text"
-                  placeholder="Search for salons or services..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                />
-              </div>
-              <button type="submit" className="search-icon" disabled={isLoading}>
-                {isLoading ? 'Searching...' : 'Search'}
-              </button>
-            </form>
-            {error && <p className="error-message">{error}</p>}
-          </div>
-        </section>
-      </main>
-      <ServiceList />
-      <SalonList salons={salons} />
-      <Recommendations />
-      <Footer />
+      <Router>
+        <Navbar />
+        <Routes>
+          <Route path="/add-salon" element={<AddSalon />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/signin" element={<Signin />} />
+        </Routes>
+        <main>
+          <section className="hero">
+            <div className="hero-content">
+              <h1>Salon-It</h1>
+              <h2>Find the perfect salon</h2>
+              <form onSubmit={handleSearch} className="search-form">
+                <div className="location-input">
+                  <input
+                    type="text"
+                    placeholder="Location"
+                    value={location}
+                    onChange={(e) => setLocation(e.target.value)}
+                  />
+                </div>
+                <div className="search-input">
+                  <input
+                    type="text"
+                    placeholder="Search for salons or services..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                  />
+                </div>
+                <button type="submit" className="search-icon" disabled={isLoading}>
+                  {isLoading ? 'Searching...' : 'Search'}
+                </button>
+              </form>
+              {error && <p className="error-message">{error}</p>}
+            </div>
+          </section>
+        </main>
+        <ServiceList />
+        <SalonList salons={salons} />
+        <Recommendations />
+        <Footer />
+      </Router>
     </div>
   );
 }
