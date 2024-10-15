@@ -21,7 +21,30 @@
 
 ## Project Structure
 
-├── src │ ├── main │ │ ├── java │ │ │ └── com.example.demo │ │ │ ├── controllers │ │ │ │ ├── CustomerController.java │ │ │ │ ├── SalonController.java │ │ │ │ └── SuperAdminController.java │ │ │ ├── models │ │ │ │ ├── Appointment.java │ │ │ │ ├── Salon.java │ │ │ │ └── Service.java │ │ │ ├── repositories │ │ │ │ ├── AppointmentRepository.java │ │ │ │ ├── SalonRepository.java │ │ │ │ └── ServiceRepository.java │ │ │ ├── services │ │ │ │ ├── CustomerService.java │ │ │ │ ├── SalonService.java │ │ │ │ └── SuperAdminService.java │ │ ├── resources │ │ │ ├── application.properties │ └── test
+├── src
+│   ├── main
+│   │   ├── java
+│   │   │   └── com.example.demo
+│   │   │       ├── controllers
+│   │   │       │   ├── CustomerController.java
+│   │   │       │   ├── SalonController.java
+│   │   │       │   └── SuperAdminController.java
+│   │   │       ├── models
+│   │   │       │   ├── Appointment.java
+│   │   │       │   ├── Salon.java
+│   │   │       │   └── Service.java
+│   │   │       ├── repositories
+│   │   │       │   ├── AppointmentRepository.java
+│   │   │       │   ├── SalonRepository.java
+│   │   │       │   └── ServiceRepository.java
+│   │   │       ├── services
+│   │   │       │   ├── CustomerService.java
+│   │   │       │   ├── SalonService.java
+│   │   │       │   └── SuperAdminService.java
+│   │   ├── resources
+│   │   │   ├── application.properties
+│   └── test
+
 
 
 ## Technologies Used
