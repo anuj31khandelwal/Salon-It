@@ -2,7 +2,15 @@ import React, { useState } from 'react';
 
 const LoginPage = () => {
   const [userType, setUserType] = useState('customer');
-  const [loginMethod, setLoginMethod] = useState('mobile');
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
+
+  const handleLogin = (e) => {
+    e.preventDefault();
+    // Replace this with your login logic, such as sending a request to your backend API
+    console.log(`Logging in with Username: ${username}, Password: ${password}`);
+    // Add success/failure handling logic
+  };
 
   return (
     <div className="login-wrapper">
@@ -21,28 +29,26 @@ const LoginPage = () => {
           Salon Owner
         </button>
       </div>
-      <div className="login-method-toggle">
-        <button
-          className={`login-toggle-btn ${loginMethod === 'mobile' ? 'login-active' : ''}`}
-          onClick={() => setLoginMethod('mobile')}
-        >
-          Mobile
-        </button>
-        <button
-          className={`login-toggle-btn ${loginMethod === 'google' ? 'login-active' : ''}`}
-          onClick={() => setLoginMethod('google')}
-        >
-          Google
-        </button>
-      </div>
-      {loginMethod === 'mobile' ? (
-        <form className="login-form">
-          <input type="tel" placeholder="Mobile Number" required className="login-input" />
-          <button type="submit" className="login-submit-btn">Send OTP</button>
-        </form>
-      ) : (
-        <button className="login-google-btn">Login with Google</button>
-      )}
+
+      <form className="login-form" onSubmit={handleLogin}>
+        <input
+          type="text"
+          placeholder="Username"
+          required
+          className="login-input"
+          value={username}
+          onChange={(e) => setUsername(e.target.value)}
+        />
+        <input
+          type="password"
+          placeholder="Password"
+          required
+          className="login-input"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+        />
+        <button type="submit" className="login-submit-btn">Login</button>
+      </form>
     </div>
   );
 };

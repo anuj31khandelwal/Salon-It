@@ -36,4 +36,17 @@ public class SalonService {
     public List<Salon> searchSalons(String location, String service) {
         return salonRepository.findByLocationAndService(location, service);
     }
+
+    // Get unconfirmed appointments for a salon
+    public List<Appointment> getPendingAppointments(Long salonId) {
+        return appointmentRepository.findBySalonIdAndConfirmedFalse(salonId);
+    }
+
+    // Confirm an appointment
+    public Appointment confirmAppointment(Long appointmentId) {
+        Appointment appointment = appointmentRepository.findById(appointmentId)
+                .orElseThrow(() -> new RuntimeException("Appointment not found for id: " + appointmentId));
+        appointment.setConfirmed(true);  // Update the appointment to be confirmed
+        return appointmentRepository.save(appointment);  // Save the updated appointment
+    }
 }

@@ -1,23 +1,5 @@
-// import React from 'react';
-// import SalonCard from './SalonCard';
-
-// const salons = [
-//   { id: 1, name: 'Salon A', rating: 4.5, imageUrl: 'assets/salon1.jpeg' },
-//   { id: 2, name: 'Salon B', rating: 4.2, imageUrl: 'assets/salon2.jpg' },
-// ];
-
-// const SalonList = () => {
-//   return (
-//     <div className="salon-list">
-//       {salons.map(salon => (
-//         <SalonCard key={salon.id} salon={salon} />
-//       ))}
-//     </div>
-//   );
-// };
-
-// export default SalonList;
 import React from 'react';
+import {Link} from 'react-router-dom';
 
 const salons = [
   {
@@ -51,16 +33,18 @@ const SalonList = () => {
       </p>
       <div className="salon-list">
         {salons.map((salon, index) => (
-          <div key={index} className="salon-card">
-            <img src={salon.image} alt={salon.title} className="salon-image" />
-            <div className="salon-info">
-              <h3 className="salon-title">{salon.title}</h3>
-              <p className="salon-places">{salon.places} Places ›</p>
-            </div>
-          </div>
+          <Link key={index} to="/salongrid" className="salon-card-link">
+                      <div className="salon-card">
+                        <img src={salon.image} alt={salon.title} className="salon-image" />
+                        <div className="salon-info">
+                          <h3 className="salon-title">{salon.title}</h3>
+                          <p className="salon-places">{salon.places} Places ›</p>
+                        </div>
+                      </div>
+                    </Link>
         ))}
       </div>
-      <a href="#" className="see-all-link">All collections in your city ›</a>
+      <Link to="/salongrid" className="see-all-link">All collections in your city ›</Link>
     </div>
   );
 };

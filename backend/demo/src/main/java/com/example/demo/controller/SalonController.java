@@ -5,6 +5,7 @@ import com.example.demo.model.Service;
 import com.example.demo.model.Salon;
 import com.example.demo.service.SalonService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -35,4 +36,18 @@ public class SalonController {
     public List<Salon> searchSalons(@RequestParam String location, @RequestParam String service) {
         return salonService.searchSalons(location, service);
     }
+
+    // Get all appointments for a salon that are not confirmed
+    @GetMapping("/{salonId}/pending-appointments")
+    public List<Appointment> getPendingAppointments(@PathVariable Long salonId) {
+        return salonService.getPendingAppointments(salonId);
+    }
+
+    // Endpoint for the salon to confirm an appointment
+    @PutMapping("/confirm-appointment/{appointmentId}")
+    public ResponseEntity<Appointment> confirmAppointment(@PathVariable Long appointmentId) {
+        Appointment confirmedAppointment = salonService.confirmAppointment(appointmentId);  // Call to SalonService
+        return ResponseEntity.ok(confirmedAppointment);
+    }
 }
+

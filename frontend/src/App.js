@@ -5,12 +5,15 @@ import AddSalon from './components/AddSalon';
 import Login from './components/Login';
 import Signin from './components/Signin';
 import SearchBar from './components/SearchBar';
+import SalonGrid from './components/SalonGrid';
 import SalonList from './components/SalonList';
+import SalonDetails from './components/SalonDetails';
 import ServiceList from './components/ServiceList';
 import MobileView from './components/MobileView';
 import Recommendations from './components/Recommendations';
+import BookAppointment from './components/BookAppointment';
 import Footer from './components/Footer';
-import { searchSalons } from './api';  // Import for the API function
+import { searchSalons } from './api';
 import './App.css';
 
 function App() {
@@ -35,6 +38,16 @@ function App() {
       setIsLoading(false);
     }
   };
+
+  const salonData = {
+      name: "Glamour Studio",
+      description: "Your one-stop shop for all beauty needs",
+      rating: 4.5,
+      address: "123 Main St, Anytown, USA",
+      phone: "(123) 456-7890",
+      hours: "Mon-Sat: 9AM-8PM",
+      // Add other necessary salon data
+    };
 
   return (
     <div className="app">
@@ -77,6 +90,10 @@ function App() {
         </main>
         <ServiceList />
         <SalonList salons={salons} />
+        <Routes>
+        <Route path="/salongrid" element={<SalonGrid />} />
+        </Routes>
+        <SalonDetails salon={salonData} />
         <Recommendations />
         <Footer />
       </Router>
