@@ -1,5 +1,7 @@
 package com.example.demo.controller;
 
+import com.example.demo.dto.ApiResponse;
+import com.example.demo.dto.PendingAppointmentDTO;
 import com.example.demo.model.Appointment;
 import com.example.demo.model.Service;
 import com.example.demo.model.Salon;
@@ -37,17 +39,24 @@ public class SalonController {
         return salonService.searchSalons(location, service);
     }
 
-    // Get all appointments for a salon that are not confirmed
     @GetMapping("/{salonId}/pending-appointments")
-    public List<Appointment> getPendingAppointments(@PathVariable Long salonId) {
+    public List<PendingAppointmentDTO> getPendingAppointments(@PathVariable Long salonId) {
         return salonService.getPendingAppointments(salonId);
     }
 
-    // Endpoint for the salon to confirm an appointment
+
     @PutMapping("/confirm-appointment/{appointmentId}")
     public ResponseEntity<Appointment> confirmAppointment(@PathVariable Long appointmentId) {
-        Appointment confirmedAppointment = salonService.confirmAppointment(appointmentId);  // Call to SalonService
+        Appointment confirmedAppointment = salonService.confirmAppointment(appointmentId);
         return ResponseEntity.ok(confirmedAppointment);
     }
-}
 
+    @GetMapping("/{salonId}/services")
+    public ResponseEntity<ApiResponse<List<Service>>> getSalonServices(@PathVariable Long salonId) {
+        List<Service> services = salonService.getSalonServices(salonId);
+        return ResponseEntity.ok(new ApiResponse<>(true,
+                "Services retrieved successfully",
+                services,
+                services.size()));
+    }
+}

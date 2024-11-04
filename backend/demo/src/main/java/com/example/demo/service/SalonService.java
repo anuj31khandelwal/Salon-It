@@ -1,5 +1,7 @@
 package com.example.demo.service;
 
+import com.example.demo.dto.PendingAppointmentDTO;
+import com.example.demo.exception.ResourceNotFoundException;
 import com.example.demo.model.Appointment;
 import com.example.demo.model.Service;
 import com.example.demo.model.Salon;
@@ -7,7 +9,9 @@ import com.example.demo.repository.AppointmentRepository;
 import com.example.demo.repository.SalonRepository;
 import com.example.demo.repository.ServiceRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+
 import java.util.List;
+import java.util.stream.Collectors;
 
 @org.springframework.stereotype.Service
 public class SalonService {
@@ -37,10 +41,17 @@ public class SalonService {
         return salonRepository.findByLocationAndService(location, service);
     }
 
-    // Get unconfirmed appointments for a salon
-    public List<Appointment> getPendingAppointments(Long salonId) {
-        return appointmentRepository.findBySalonIdAndConfirmedFalse(salonId);
+    public List<PendingAppointmentDTO> getPendingAppointments(Long salonId) {
+        List<Appointment> pendingAppointments = appointmentRepository.findBySalonIdAndConfirmedFalse(salonId);
+        return pendingAppointments.stream()
+                .map(appointment -> new PendingAppointmentDTO(
+                        appointment.getId(),
+                        appointment.getAppointmentTime(),
+                        appointment.getCustomerName(),
+                        appointment.isConfirmed()))
+                .collect(Collectors.toList());
     }
+
 
     // Confirm an appointment
     public Appointment confirmAppointment(Long appointmentId) {
@@ -48,5 +59,13 @@ public class SalonService {
                 .orElseThrow(() -> new RuntimeException("Appointment not found for id: " + appointmentId));
         appointment.setConfirmed(true);  // Update the appointment to be confirmed
         return appointmentRepository.save(appointment);  // Save the updated appointment
+    }
+    public List<Service> getSalonServices(Long salonId) {
+        // First check if salon exists
+        Salon salon = salonRepository.findById(salonId)
+                .orElseThrow(() -> new ResourceNotFoundException("Salon not found with id: " + salonId));
+
+        // Get all active services for the salon
+        return serviceRepository.findBySalonIdAndActiveTrue(salonId);
     }
 }

@@ -1,15 +1,37 @@
 import React, { useState } from 'react';
+import axios from 'axios';
 
 const LoginPage = () => {
   const [userType, setUserType] = useState('customer');
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+  const [errorMessage, setErrorMessage] = useState('');
 
-  const handleLogin = (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
-    // Replace this with your login logic, such as sending a request to your backend API
-    console.log(`Logging in with Username: ${username}, Password: ${password}`);
-    // Add success/failure handling logic
+    setErrorMessage(''); // Clear any previous error messages
+
+    try {
+      const response = await axios.post('http://localhost:8080/authorization/login', {
+        username,
+        password,
+        userType, // You may need this if backend handles different user types
+      }, { withCredentials: true }); // Include credentials for session handling
+
+      // Handle successful login (redirect or display message)
+      if (response.status === 200) {
+        console.log('Login successful!');
+        // Redirect to the dashboard or home page
+        window.location.href = '/home';
+      }
+    } catch (error) {
+      if (error.response && error.response.status === 401) {
+        setErrorMessage('Invalid username or password');
+      } else {
+        setErrorMessage('An error occurred. Please try again later.');
+      }
+      console.error('Error logging in:', error);
+    }
   };
 
   return (
@@ -29,6 +51,8 @@ const LoginPage = () => {
           Salon Owner
         </button>
       </div>
+
+      {errorMessage && <div className="error-message">{errorMessage}</div>}
 
       <form className="login-form" onSubmit={handleLogin}>
         <input

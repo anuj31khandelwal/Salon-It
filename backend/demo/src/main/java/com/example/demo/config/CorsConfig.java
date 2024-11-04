@@ -17,25 +17,37 @@ import org.springframework.web.cors.CorsConfigurationSource;
 
 @Configuration
 public class CorsConfig {
-
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .csrf(csrf -> csrf.disable()) // Disable CSRF protection
                 .authorizeHttpRequests(authz -> authz
-                        .requestMatchers("/login").permitAll() // Allow access to login page
-                        .anyRequest().authenticated() // Protect all other pages
+                        .anyRequest().permitAll() // Allow all requests without authentication for testing
                 )
-                .formLogin(form -> form
-                        .loginPage("/login") // Define custom login page
-                        .defaultSuccessUrl("/home", true) // Redirect to home after login
-                        .permitAll()
-                )
-                .logout(logout -> logout.permitAll())
                 .cors(cors -> cors.configurationSource(corsConfigurationSource())); // Use custom CORS config source
 
         return http.build();
     }
+
+
+//    @Bean
+//    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+//        http
+//                .csrf(csrf -> csrf.disable()) // Disable CSRF protection
+//                .authorizeHttpRequests(authz -> authz
+//                        .requestMatchers("/login").permitAll() // Allow access to login page
+//                        .anyRequest().authenticated() // Protect all other pages
+//                )
+//                .formLogin(form -> form
+//                        .loginPage("/login") // Define custom login page
+//                        .defaultSuccessUrl("/home", true) // Redirect to home after login
+//                        .permitAll()
+//                )
+//                .logout(logout -> logout.permitAll())
+//                .cors(cors -> cors.configurationSource(corsConfigurationSource())); // Use custom CORS config source
+//
+//        return http.build();
+//    }
 
     @Bean
     public PasswordEncoder passwordEncoder() {

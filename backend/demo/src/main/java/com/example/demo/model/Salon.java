@@ -1,10 +1,11 @@
 package com.example.demo.model;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import java.util.List;
 
 @Entity
-@Table(name="Salons")
+@Table(name = "Salons")
 public class Salon {
 
     @Id
@@ -14,10 +15,15 @@ public class Salon {
     private String name;
     private String location;
 
-    @OneToMany(mappedBy = "salon", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "salon", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference
     private List<Service> services;
 
-    // Getters and Setters
+    // Default constructor
+    public Salon() {}
+
+    // Parameterized constructor, Getters, and Setters...
+
     public Long getId() {
         return id;
     }
