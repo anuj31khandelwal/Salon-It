@@ -50,4 +50,19 @@ public class BookingService {
         // Save the appointment to the repository
         return appointmentRepository.save(appointment);
     }
+
+    public Appointment updateAppointmentStatus(Long appointmentId, String status, String reason) {
+        Appointment appointment = appointmentRepository.findById(appointmentId)
+                .orElseThrow(() -> new IllegalArgumentException("Invalid appointment ID"));
+        appointment.setStatus(status);
+        if ("Rejected".equalsIgnoreCase(status)) {
+            appointment.setRejectionReason(reason);
+        }
+        return appointmentRepository.save(appointment);
+    }
+    public Appointment getAppointmentById(Long appointmentId) {
+        return appointmentRepository.findById(appointmentId)
+                .orElseThrow(() -> new RuntimeException("Appointment not found"));
+    }
+
 }

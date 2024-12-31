@@ -1,8 +1,9 @@
-package com.example.demo.controller;
+package com.example.demo.model;
 
-public class SignupRequest {
+public class LoginRequest {
     private String username;
     private String password;
+    private String userType;
 
     // Getters and setters
     public String getUsername() {
@@ -19,5 +20,13 @@ public class SignupRequest {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public String getUserType() {
+        return userType;
+    }
+
+    public void setUserType(String userType) {
+        this.userType = userType;
     }
 }

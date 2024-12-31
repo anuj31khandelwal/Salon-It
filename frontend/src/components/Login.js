@@ -1,28 +1,23 @@
 import React, { useState } from 'react';
-import axios from 'axios';
+import { login } from '../api';
+import { useNavigate } from 'react-router-dom';
 
 const LoginPage = () => {
-  const [userType, setUserType] = useState('customer');
+  const [userType, setUserType] = useState('Customer');
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
+  const navigate = useNavigate();
 
   const handleLogin = async (e) => {
     e.preventDefault();
-    setErrorMessage(''); // Clear any previous error messages
+    setErrorMessage('');
 
     try {
-      const response = await axios.post('http://localhost:8080/authorization/login', {
-        username,
-        password,
-        userType, // You may need this if backend handles different user types
-      }, { withCredentials: true }); // Include credentials for session handling
-
-      // Handle successful login (redirect or display message)
+      const response = await login(username, password, userType); // Call the login function
       if (response.status === 200) {
         console.log('Login successful!');
-        // Redirect to the dashboard or home page
-        window.location.href = '/home';
+        navigate('/home');
       }
     } catch (error) {
       if (error.response && error.response.status === 401) {

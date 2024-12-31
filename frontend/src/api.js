@@ -45,30 +45,65 @@ export const bookAppointment = async (appointmentRequest) => {
     }
 };
 
-//export const getSalonServices = async (salonId) => {
-//    try {
-//        const response = await api.get(`/salons/${salonId}/services`);
-//        return response.data;
-//    } catch (error) {
-//        throw error;
-//    }
-//};
+export const searchSalons = async (searchParams) => {
+  try {
+    // Construct the query based on the parameters provided
+    const response = await api.get('/salon/search', {
+      params: searchParams // Pass the dynamic search parameters (location, service, salon)
+    });
+    return response.data;
+  } catch (error) {
+    console.error('Error in API call:', error);
+    throw error;
+  }
+};
 
 //const api = axios.create({
 //  baseURL: process.env.REACT_APP_API_URL,
 //});
 
-export const searchSalons = async (location, service) => {
+const BASE_URL = 'http://localhost:8080/authorization';
+
+// Login function
+export const login = async (username, password, userType) => {
   try {
-    const response = await api.get('/salon', {
-      params: { location, service }
-    });
+  console.log('Login Request Data:');
+      console.log('Username:', username);
+      console.log('Password:', password);
+      console.log('UserType:', userType);
+    const response = await axios.post(
+      `${BASE_URL}/login`,
+      { username, password, userType },
+      { withCredentials: true } // Include credentials for session handling
+    );
+    return response; // Return response to be handled in the calling component
+  } catch (error) {
+    throw error; // Throw error to be caught in the calling component
+  }
+};
+
+// Example: Get home page data or any other API call
+export const getHomePage = async () => {
+  try {
+    const response = await axios.get(`${BASE_URL}/home`);
     return response.data;
   } catch (error) {
-    console.error('API call error:', error);
     throw error;
   }
 };
+
+
+//export const searchSalons = async (location, service) => {
+//  try {
+//    const response = await api.get('/salon', {
+//      params: { location, service }
+//    });
+//    return response.data;
+//  } catch (error) {
+//    console.error('API call error:', error);
+//    throw error;
+//  }
+//};
 
 // Function to call your backend API for booking an appointment
 

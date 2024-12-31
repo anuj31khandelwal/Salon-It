@@ -68,4 +68,23 @@ public class SalonService {
         // Get all active services for the salon
         return serviceRepository.findBySalonIdAndActiveTrue(salonId);
     }
+    public List<Salon> searchBySalonName(String salonName) {
+        return salonRepository.findByNameContainingIgnoreCase(salonName);
+    }
+
+    public List<Salon> searchByLocation(String location) {
+        return salonRepository.findByLocationContainingIgnoreCase(location);
+    }
+
+    public List<Salon> searchByService(String service) {
+        return salonRepository.findByServiceNameContainingIgnoreCase(service);
+    }
+
+    public List<Salon> searchSalonsByLocationAndService(String location, String service) {
+        return salonRepository.findByLocationAndServiceNameContainingIgnoreCase(location, service);
+    }
+
+    public List<Salon> getAllSalons() {
+        return salonRepository.findAll();
+    }
 }

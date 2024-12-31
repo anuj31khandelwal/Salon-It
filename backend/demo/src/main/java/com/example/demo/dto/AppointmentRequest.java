@@ -7,6 +7,7 @@ public class AppointmentRequest {
     private String customerName;
     private String customerEmail;
 
+
     // Getters and Setters
 
     public Long getSalonId() {

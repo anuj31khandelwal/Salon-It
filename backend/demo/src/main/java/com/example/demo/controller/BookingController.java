@@ -35,10 +35,8 @@ public class BookingController {
         try {
             Appointment appointment = bookingService.createAppointment(request);
 
-            // Here you check if the appointment was confirmed by the salon
-            boolean isConfirmed = appointment.isConfirmed(); // Assuming this field is set in your logic
+            boolean isConfirmed = appointment.isConfirmed();
 
-            // Return only the confirmation status
             Map<String, Boolean> response = new HashMap<>();
             response.put("confirmed", isConfirmed);
 
@@ -46,6 +44,14 @@ public class BookingController {
         } catch (Exception e) {
             return ResponseEntity.badRequest().build();
         }
+    }
+    @GetMapping("/appointments/{appointmentId}/status")
+    public ResponseEntity<Map<String, String>> getAppointmentStatus(@PathVariable Long appointmentId) {
+        Appointment appointment = bookingService.getAppointmentById(appointmentId);
+        Map<String, String> response = new HashMap<>();
+        response.put("status", String.valueOf(appointment.isConfirmed()));
+        response.put("rejectionReason", appointment.getRejectionReason());
+        return ResponseEntity.ok(response);
     }
 
 

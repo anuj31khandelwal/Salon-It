@@ -24,6 +24,11 @@ public class Appointment {
     private String customerEmail;
     private boolean confirmed;
     private LocalDateTime createdAt;
+    private String status; // Values: "Pending", "Confirmed", "Rejected"
+
+    @Column(length = 255)
+    private String rejectionReason;
+
 
     // Getters and Setters
     public Long getId() { return id; }
@@ -57,4 +62,20 @@ public class Appointment {
     public LocalDateTime getCreatedAt() { return createdAt; }
 
     public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+    public String getRejectionReason() {
+        return rejectionReason;
+    }
+
+    public void setRejectionReason(String rejectionReason) {
+        this.rejectionReason = rejectionReason;
+    }
 }

@@ -7,6 +7,7 @@ import com.example.demo.model.Service;
 import com.example.demo.model.Salon;
 import com.example.demo.service.SalonService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -35,9 +36,36 @@ public class SalonController {
     }
 
     @GetMapping("/search")
-    public List<Salon> searchSalons(@RequestParam String location, @RequestParam String service) {
-        return salonService.searchSalons(location, service);
+    public ResponseEntity<List<Salon>> searchSalons(
+            @RequestParam(required = false) String location,
+            @RequestParam(required = false) String service,
+            @RequestParam(required = false) String salon) {
+
+        List<Salon> salons;
+
+        if (salon != null && !salon.isEmpty()) {
+            // Search by salon name
+            salons = salonService.searchBySalonName(salon);
+        } else if (location != null && !location.isEmpty() && service != null && !service.isEmpty()) {
+            // Search by both location and service
+            salons = salonService.searchSalonsByLocationAndService(location, service);
+        } else if (location != null && !location.isEmpty()) {
+            // Search by location only
+            salons = salonService.searchByLocation(location);
+        } else if (service != null && !service.isEmpty()) {
+            // Search by service only
+            salons = salonService.searchByService(service);
+        } else {
+            salons = salonService.getAllSalons();  // Return all salons if no filters are applied
+        }
+
+        if (salons.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NO_CONTENT).body(salons); // Return 204 if no salons found
+        }
+
+        return ResponseEntity.ok(salons); // Return 200 with found salons
     }
+
 
     @GetMapping("/{salonId}/pending-appointments")
     public List<PendingAppointmentDTO> getPendingAppointments(@PathVariable Long salonId) {

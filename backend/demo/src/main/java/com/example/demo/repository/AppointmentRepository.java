@@ -14,4 +14,5 @@ public interface AppointmentRepository extends JpaRepository<Appointment, Long> 
     List<Appointment> findBySalonIdAndConfirmedFalse(Long salonId);
 
     List<Appointment> findBySalonId(Long salonId);
+
 }
