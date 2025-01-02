@@ -87,4 +87,12 @@ public class SalonService {
     public List<Salon> getAllSalons() {
         return salonRepository.findAll();
     }
+    public Salon getSalonById(Long id) {
+        return salonRepository.findById(id).orElse(null);
+    }
+
+    public List<Service> getServicesBySalonId(Long salonId) {
+        return serviceRepository.findBySalonId(salonId);
+    }
+
 }

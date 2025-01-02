@@ -13,4 +13,6 @@ public interface ServiceRepository extends JpaRepository<Service, Long> {
 //    List<Service> findBySalonId(Long salonId);
     @Query("SELECT s FROM Service s WHERE s.salon.id = :salonId AND s.active = true ORDER BY s.category, s.name")
     List<Service> findBySalonIdAndActiveTrue(@Param("salonId") Long salonId);
+
+    public List<Service> findBySalonId(Long salonId);
 }

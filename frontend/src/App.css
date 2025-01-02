@@ -773,6 +773,173 @@ main {
   padding: 10px;
   border-bottom: 1px solid #ddd;
 }
+.add-salon-page {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  background-color: #f9f9f9;
+  font-family: 'Arial', sans-serif;
+}
+
+.add-salon-page h1 {
+  font-size: 2rem;
+  margin-bottom: 1.5rem;
+  color: #333;
+}
+
+.add-salon-page form {
+  width: 100%;
+  max-width: 500px;
+  background: #ffffff;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.add-salon-page form div {
+  margin-bottom: 1.2rem;
+}
+
+.add-salon-page label {
+  display: block;
+  font-weight: bold;
+  margin-bottom: 0.5rem;
+  color: #555;
+}
+
+.add-salon-page input {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  font-size: 1rem;
+  color: #333;
+}
+
+.add-salon-page input:focus {
+  border-color: #4caf50;
+  box-shadow: 0 0 5px rgba(76, 175, 80, 0.5);
+  outline: none;
+}
+
+.add-salon-page button {
+  width: 100%;
+  padding: 10px;
+  background-color: #4caf50;
+  color: #fff;
+  font-size: 1rem;
+  font-weight: bold;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.add-salon-page button:hover {
+  background-color: #45a049;
+}
+
+.add-salon-page button:active {
+  background-color: #3e8e41;
+}
+
+.upload-document-page {
+  font-family: 'Arial', sans-serif;
+  max-width: 600px;
+  margin: 50px auto;
+  padding: 20px;
+  background: #f9f9f9;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+  text-align: center;
+}
+
+.upload-document-page h1 {
+  font-size: 24px;
+  color: #333;
+  margin-bottom: 20px;
+}
+
+.upload-document-page form {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.upload-document-page label {
+  font-weight: bold;
+  color: #555;
+  text-align: left;
+  display: block;
+  margin-bottom: 5px;
+}
+
+.upload-document-page input[type="file"] {
+  display: block;
+  width: 100%;
+  padding: 8px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  background: #fff;
+  font-size: 14px;
+  color: #333;
+  cursor: pointer;
+}
+
+.upload-document-page button {
+  padding: 10px 20px;
+  font-size: 16px;
+  color: #fff;
+  background: #007bff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+.upload-document-page button:disabled {
+  background: #aaa;
+  cursor: not-allowed;
+}
+
+.upload-document-page button:hover:not(:disabled) {
+  background: #0056b3;
+}
+
+.upload-document-page .verification-message {
+  padding: 20px;
+  background: #e9f7ef;
+  border: 1px solid #d4edda;
+  color: #155724;
+  border-radius: 4px;
+}
+
+.upload-document-page .verification-message h2 {
+  font-size: 20px;
+  margin-bottom: 10px;
+}
+
+.upload-document-page .verification-message p {
+  font-size: 16px;
+  line-height: 1.5;
+}
+
+@media (max-width: 600px) {
+  .upload-document-page {
+    padding: 15px;
+  }
+
+  .upload-document-page h1 {
+    font-size: 20px;
+  }
+
+  .upload-document-page button {
+    font-size: 14px;
+  }
+}
+
 /*
 .salon-appointment {
   margin-top: 20px;

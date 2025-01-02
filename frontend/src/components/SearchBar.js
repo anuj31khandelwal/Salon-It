@@ -1,64 +1,67 @@
-import React, { useState } from 'react';
-import { searchSalons } from '../api'; // Import the search API
+import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
-const SalonSearch = () => {
-  const [searchTerm, setSearchTerm] = useState('');  // Initialize search term state
-  const [location, setLocation] = useState('');      // Initialize location state
-  const [service, setService] = useState('');        // Initialize service state
+const SearchPage = () => {
+  const [location, setLocation] = useState('');
+  const [service, setService] = useState('');
+  const [salon, setSalon] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+  const [errorMessage, setErrorMessage] = useState('');
+  const navigate = useNavigate();
 
-  // Function to handle input change in the search bar
-  const handleSearchTermChange = (event) => {
-    setSearchTerm(event.target.value);  // Update the search term state based on user input
-  };
+  // API call to search salons
+  const searchSalons = async () => {
+    setIsLoading(true);
+    setErrorMessage('');
 
-  // Function to handle form submission or search trigger
-  const handleSearch = async () => {
+    console.log('Inputs before API call:', { salon, location, service });
+
+    // Prepare query params for the API
+    const params = new URLSearchParams();
+    if (salon) params.append('salon', salon);
+    if (location) params.append('location', location);
+    if (service) params.append('service', service);
+
+    console.log('Query string being sent to API:', params.toString());
+
     try {
-      // If search term is empty, set the location and service params to empty
-      let searchParams = { location: '', service: '', salon: '' };
-
-      // If search term contains a location or service, set those params
-      if (location) {
-        searchParams.location = location;
-      }
-      if (service) {
-        searchParams.service = service;
-      }
-      if (searchTerm) {
-        searchParams.salon = searchTerm;  // If user enters a salon name, set it as a salon search parameter
-      }
-
-      // Call searchSalons API with the appropriate search parameters
-      const salons = await searchSalons(searchParams);
-      console.log(salons); // You can store or display the results in the UI
+      // Instead of fetching, just navigate to the results page with query params
+      navigate(`/search-results?${params.toString()}`);
     } catch (error) {
-      console.error('Error searching salons:', error);
+      console.error('Error during search:', error);
+      setErrorMessage('An error occurred. Please try again.');
+    } finally {
+      setIsLoading(false);
     }
   };
 
   return (
-    <div>
+    <div className="search-bar">
       <input
         type="text"
-        placeholder="Search salon, location, or service"
-        value={searchTerm}
-        onChange={handleSearchTermChange} // Update search term when user types
+        placeholder="Search by salon name"
+        value={salon}
+        onChange={(e) => setSalon(e.target.value)}
       />
       <input
         type="text"
         placeholder="Enter location"
         value={location}
-        onChange={(e) => setLocation(e.target.value)} // Update location when user types
+        onChange={(e) => setLocation(e.target.value)}
       />
       <input
         type="text"
         placeholder="Enter service"
         value={service}
-        onChange={(e) => setService(e.target.value)} // Update service when user types
+        onChange={(e) => setService(e.target.value)}
       />
-      <button onClick={handleSearch}>Search</button>
+      <button onClick={searchSalons} disabled={isLoading}>
+        {isLoading ? 'Searching...' : 'Search'}
+      </button>
+
+      {errorMessage && <p style={{ color: 'red' }}>{errorMessage}</p>}
     </div>
   );
 };
 
-export default SalonSearch;
+export default SearchPage;

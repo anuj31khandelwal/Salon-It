@@ -1,146 +1,62 @@
-import React, { useState } from 'react';
-import { useLocation } from 'react-router-dom';
-import BookAppointment from './BookAppointment';
-import { Star, MapPin, Phone, Clock, Coffee, Scissors, SprayCan } from 'lucide-react';
+import { useEffect, useState } from 'react';
+import { useParams } from 'react-router-dom';
 
 const SalonDetailsPage = () => {
-    const location = useLocation();
-    const { salon } = location.state || {};
-    const [activeTab, setActiveTab] = useState('overview');
+  const { salonId } = useParams(); // Get salonId from the URL
+  const [salon, setSalon] = useState(null);
+  const [services, setServices] = useState([]);
 
-    console.log('Salon:', salon);
+  useEffect(() => {
+    const fetchSalonDetails = async () => {
+      console.log('Fetching salon details...');
 
-    if (!salon) {
-        return <p>Loading salon details...</p>;
-    }
+      try {
+        // Fetch salon details by salonId
+        const salonResponse = await fetch(`http://localhost:8080/salon/${salonId}`);
+        const salonData = await salonResponse.json();
 
-    const renderTabContent = () => {
-        switch (activeTab) {
-            case 'overview':
-                return (
-                    <div className="overview-content">
-                        <h3>About this place</h3>
-                        <div className="menu-preview">
-                            <h4>Services Menu</h4>
-                            <img src="/assets/menu.jpg" alt="Menu preview" />
-                            <button className="view-menu-btn">View full menu</button>
-                        </div>
-                        <div className="services-offered">
-                            <h4>Services Offered</h4>
-                            <div className="services-tags">
-                                <span><Coffee size={16} /> Hair Styling</span>
-                                <span><Scissors size={16} /> Haircuts</span>
-                                <span><SprayCan size={16} /> Coloring</span>
-                            </div>
-                        </div>
-                        <div className="additional-info">
-                            <h4>More Info</h4>
-                            <ul>
-                                <li>Accepts digital payments</li>
-                                <li>Unisex salon</li>
-                                <li>Parking available</li>
-                            </ul>
-                        </div>
-                    </div>
-                );
-            case 'book':
-                return (
-                    <div className="book-content">
-                        <h3>Book an Appointment</h3>
-                        <BookAppointment salonId={salon.id}/>
-                    </div>
-                );
-            case 'reviews':
-                return (
-                    <div className="reviews-content">
-                        <h3>Customer Reviews</h3>
-                        {/* Add customer reviews here */}
-                    </div>
-                );
-            case 'photos':
-                return (
-                    <div className="photos-content">
-                        <h3>Salon Photos</h3>
-                        <div className="photo-grid">
-                            <img src="/assets/salon1.jpeg" alt="Salon interior" />
-                            <img src="/assets/salon1.jpeg" alt="Salon exterior" />
-                            <img src="/assets/salon1.jpeg" alt="Styling area" />
-                            <img src="/assets/salon1.jpeg" alt="Waiting area" />
-                        </div>
-                    </div>
-                );
-            default:
-                return null;
+        console.log('Salon data:', salonData); // Log the fetched salon data
+        setSalon(salonData);
+
+        // Fetch services for this salon
+        const servicesResponse = await fetch(`http://localhost:8080/salon/${salonId}/services`);
+        const servicesData = await servicesResponse.json();
+
+        console.log('Services data:', servicesData); // Log the fetched services data
+
+        // Ensure the services data is an array
+        if (Array.isArray(servicesData)) {
+          setServices(servicesData);
+        } else {
+          console.error('Received services data is not an array:', servicesData);
         }
+      } catch (error) {
+        console.error('Error fetching salon details:', error);
+      }
     };
 
-    return (
-        <div className="salon-details-page">
-            <div className="salon-header">
-                <div className="salon-images">
-                    <img src="/assets/salon1.jpeg" alt={salon.name} className="main-image" />
-                    <div className="image-grid">
-                        <img src="/assets/salon1.jpeg" alt="Salon interior" />
-                        <img src="/assets/salon1.jpeg" alt="Salon exterior" />
-                        <img src="/assets/salon1.jpeg" alt="Styling area" />
-                        <button className="view-gallery-btn">View Gallery</button>
-                    </div>
-                </div>
-                <div className="salon-info">
-                    <h1>{salon.name}</h1>
-                    <p className="salon-description">{salon.description || 'No description available.'}</p>
-                    <div className="salon-meta">
-                        <span className="rating">
-                            <Star size={16} fill="#4CAF50" color="#4CAF50" />
-                            {salon.rating || 'N/A'}
-                        </span>
-                        <span className="address">
-                            <MapPin size={16} /> {salon.address}
-                        </span>
-                        <span className="phone">
-                            <Phone size={16} /> {salon.phone || 'N/A'}
-                        </span>
-                        <span className="hours">
-                            <Clock size={16} /> {salon.hours || 'N/A'}
-                        </span>
-                    </div>
-                </div>
-            </div>
-            <div className="salon-tabs">
-                <button
-                    className={activeTab === 'overview' ? 'active' : ''}
-                    onClick={() => setActiveTab('overview')}
-                >
-                    Overview
-                </button>
-                <button
-                    className={activeTab === 'book' ? 'active' : ''}
-                    onClick={() => setActiveTab('book')}
-                >
-                    Book Appointment
-                </button>
-                <button
-                    className={activeTab === 'reviews' ? 'active' : ''}
-                    onClick={() => setActiveTab('reviews')}
-                >
-                    Reviews
-                </button>
-                <button
-                    className={activeTab === 'photos' ? 'active' : ''}
-                    onClick={() => setActiveTab('photos')}
-                >
-                    Photos
-                </button>
-            </div>
-            <div className="tab-content">
-                {renderTabContent()}
-            </div>
-            <div className="booking-cta">
-                <button className="book-now-btn">Book Now</button>
-                <p>Flat 10% OFF + 2 more offers available</p>
-            </div>
-        </div>
-    );
+    fetchSalonDetails();
+  }, [salonId]);
+
+  if (!salon) return <div>Loading...</div>;
+
+  return (
+    <div>
+      <h2>{salon.name}</h2>
+      <p>{salon.location}</p>
+
+      <h3>Services Offered:</h3>
+      <ul>
+        {services.length === 0 ? (
+          <p>No services found</p>
+        ) : (
+          services.map((service) => (
+            <li key={service.id}>{service.name}</li>
+          ))
+        )}
+      </ul>
+    </div>
+  );
 };
 
 export default SalonDetailsPage;

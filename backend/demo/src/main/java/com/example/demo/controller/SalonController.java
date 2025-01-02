@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -87,4 +88,62 @@ public class SalonController {
                 services,
                 services.size()));
     }
+    @GetMapping("/{id}")
+    public ResponseEntity<Salon> getSalonById(@PathVariable Long id) {
+        Salon salon = salonService.getSalonById(id);
+        if (salon == null) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(salon);
+    }
+
+    @GetMapping("/{id}/services")
+    public ResponseEntity<List<Service>> getServicesBySalonId(@PathVariable Long id) {
+        List<Service> services = salonService.getServicesBySalonId(id);
+        if (services.isEmpty()) {
+            return ResponseEntity.noContent().build();
+        }
+        return ResponseEntity.ok(services);
+    }
+
+    @PostMapping("/upload-documents/{salonId}")
+    public ResponseEntity<?> uploadDocuments(@PathVariable Long salonId,
+                                             @RequestParam("cosmetologyLicense") MultipartFile cosmetologyLicense,
+                                             @RequestParam("idProof") MultipartFile idProof,
+                                             @RequestParam("taxId") MultipartFile taxId,
+                                             @RequestParam("bankAccountDetails") MultipartFile bankAccountDetails,
+                                             @RequestParam("serviceMenu") MultipartFile serviceMenu,
+                                             @RequestParam("bestWorkPhotos") MultipartFile bestWorkPhotos) {
+
+        // Process and save documents (skip actual file saving for now)
+        // You can implement actual file storage logic later
+        boolean isDocumentsUploaded = saveDocuments(salonId, cosmetologyLicense, idProof, taxId, bankAccountDetails, serviceMenu, bestWorkPhotos);
+
+        if (isDocumentsUploaded) {
+            // Generate a reference ID after successful document upload
+                String referenceId = String.valueOf(salonId);
+
+            // Save the reference ID to the salon record (you can implement this method in salonService)
+
+
+            // Return the reference ID in the response
+            return ResponseEntity.ok(referenceId);
+        } else {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Failed to upload documents");
+        }
+    }
+
+    // Temporary method to save the uploaded documents (you can expand this with actual logic)
+    private boolean saveDocuments(Long salonId, MultipartFile cosmetologyLicense, MultipartFile idProof,
+                                  MultipartFile taxId, MultipartFile bankAccountDetails,
+                                  MultipartFile serviceMenu, MultipartFile bestWorkPhotos) {
+        // For now, just return true as a placeholder for actual logic
+        return true;
+    }
+
+    // Temporary method to generate reference ID (you can implement your own ID generation logic)
+    private String generateReferenceId() {
+        return "REF-" + System.currentTimeMillis();  // Example reference ID
+    }
+
 }

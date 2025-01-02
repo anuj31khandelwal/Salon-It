@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
+import com.example.demo.model.Service;
 
 import java.util.List;
 
@@ -24,4 +25,6 @@ List<Salon> findByServiceNameContainingIgnoreCase(@Param("service") String servi
     // Search by location and service name using a JOIN
     @Query("SELECT s FROM Salon s JOIN s.services se WHERE LOWER(s.location) LIKE LOWER(CONCAT('%', :location, '%')) AND LOWER(se.name) LIKE LOWER(CONCAT('%', :service, '%'))")
     List<Salon> findByLocationAndServiceNameContainingIgnoreCase(@Param("location") String location, @Param("service") String service);
+
+
 }

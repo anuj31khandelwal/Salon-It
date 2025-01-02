@@ -12,7 +12,10 @@ import ServiceList from './components/ServiceList';
 import MobileView from './components/MobileView';
 import Recommendations from './components/Recommendations';
 import BookAppointment from './components/BookAppointment';
+import SalonPartnerPage from './components/SalonPartnerPage';
 import Footer from './components/Footer';
+import UploadDocuments from './components/UploadDocuments';
+import DocumentVerification from './components/DocumentVerification';
 import { searchSalons } from './api';
 import './App.css';
 
@@ -54,9 +57,13 @@ function App() {
       <Router>
         <Navbar />
         <Routes>
-          <Route path="/add-salon" element={<AddSalon />} />
+          <Route path="/salon-page" element={<SalonPartnerPage />} />
+          <Route path="/add-salon-page" element={<AddSalon />} />
+          <Route path="/upload-documents-page/:salonId" element={<UploadDocuments />} />
+          <Route path="/document-verification-page" element={<DocumentVerification />} />
           <Route path="/login" element={<Login />} />
           <Route path="/signin" element={<Signin />} />
+          <Route path="/search-bar" element={<SearchBar />} />
         </Routes>
         <main>
           <section className="hero">
