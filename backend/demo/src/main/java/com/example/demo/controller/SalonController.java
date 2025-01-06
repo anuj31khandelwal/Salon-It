@@ -97,15 +97,6 @@ public class SalonController {
         return ResponseEntity.ok(salon);
     }
 
-    @GetMapping("/{id}/services")
-    public ResponseEntity<List<Service>> getServicesBySalonId(@PathVariable Long id) {
-        List<Service> services = salonService.getServicesBySalonId(id);
-        if (services.isEmpty()) {
-            return ResponseEntity.noContent().build();
-        }
-        return ResponseEntity.ok(services);
-    }
-
     @PostMapping("/upload-documents/{salonId}")
     public ResponseEntity<?> uploadDocuments(@PathVariable Long salonId,
                                              @RequestParam("cosmetologyLicense") MultipartFile cosmetologyLicense,

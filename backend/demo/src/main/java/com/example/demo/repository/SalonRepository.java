@@ -14,7 +14,8 @@ import java.util.List;
 public interface SalonRepository extends JpaRepository<Salon, Long> {
     @Query("SELECT s FROM Salon s JOIN s.services srv WHERE s.location = :location AND srv.name = :service")
     List<Salon> findByLocationAndService(String location, String service);
-    List<Salon> findByNameContainingIgnoreCase(String name); // Search by salon name
+    @Query("SELECT s FROM Salon s WHERE LOWER(s.name) LIKE LOWER(CONCAT('%', :salon, '%'))")
+    List<Salon> findByNameContainingIgnoreCase(@Param("salon") String salon);// Search by salon name
     List<Salon> findByLocationContainingIgnoreCase(String location); // Search by location
 //    List<Salon> findByServiceNameContainingIgnoreCase(String service); // Search by service
 //    List<Salon> findByLocationAndServiceNameContainingIgnoreCase(String location, String service); // Search by both

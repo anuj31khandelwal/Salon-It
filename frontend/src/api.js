@@ -11,20 +11,25 @@ const api = axios.create({
 
 // api.js
 export const getSalonServices = async (salonId) => {
-    const response = await fetch(`http://localhost:8080/salon/${salonId}/services`, {
-        method: 'GET',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-    });
-
-    if (!response.ok) {
-        throw new Error('Failed to fetch services');
+  console.log(`getSalonServices called with salonId: ${salonId}`);
+  try {
+    if (!salonId) {
+      throw new Error('Salon ID is required to fetch services.');
     }
 
-    const result = await response.json();
-    // Assuming your API returns the services under a specific property, adjust accordingly
-    return result.data; // Adjust this based on your actual response structure
+    const response = await axios.get(`http://localhost:8080/salon/${salonId}/services`);
+    console.log('API Response:', response.data);
+
+    // Ensure the response structure is as expected
+    if (response && response.data) {
+      return response.data;
+    } else {
+      throw new Error('Invalid response format from API.');
+    }
+  } catch (error) {
+    console.error('Error in getSalonServices:', error.message || error);
+    throw error;
+  }
 };
 
 //export const bookAppointment = async (appointmentData) => {
@@ -35,15 +40,28 @@ export const getSalonServices = async (salonId) => {
 //        throw error;
 //    }
 //};
-export const bookAppointment = async (appointmentRequest) => {
-    try {
-        const response = await axios.post('http://localhost:8080/api/appointments/book', appointmentRequest);
-        return response.data; // Return the booked appointment data
-    } catch (error) {
-        console.error('Error booking appointment:', error);
-        throw error; // Re-throw the error to be handled in the calling function
-    }
+// api.js
+
+
+//export const getSalonServices = async (salonId) => {
+//    const response = await axios.get(`http://localhost:8080/api/salons/${salonId}/services`);
+//    return response.data;
+//};
+
+export const bookAppointment = async (payload) => {
+    const response = await axios.post('http://localhost:8080/api/appointments/book', payload);
+    return response.data;
 };
+
+//export const bookAppointment = async (appointmentRequest) => {
+//    try {
+//        const response = await axios.post('http://localhost:8080/api/appointments/book', appointmentRequest);
+//        return response.data; // Return the booked appointment data
+//    } catch (error) {
+//        console.error('Error booking appointment:', error);
+//        throw error; // Re-throw the error to be handled in the calling function
+//    }
+//};
 
 export const searchSalons = async (searchParams) => {
   try {
