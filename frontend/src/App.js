@@ -106,9 +106,9 @@ function App() {
         <Routes>
           <Route path="/salon-page" element={<SalonPartnerPage />} />
           <Route path="/add-salon-page" element={<AddSalon />} />
-          <Route path="/booking-form/:salonId" element={<BookAppointment />} />
           <Route path="/upload-documents-page/:salonId" element={<UploadDocuments />} />
           <Route path="/document-verification-page" element={<DocumentVerification />} />
+          <Route path="/booking-form/:salonId" element={<BookAppointment />} />
           <Route path="/search-bar" element={<SearchBar />} />
           <Route path="/search-results" element={<SearchResultsPage />} />
           <Route path="/login" element={<Login />} />

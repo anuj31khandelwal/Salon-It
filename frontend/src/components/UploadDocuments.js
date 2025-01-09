@@ -2,7 +2,8 @@ import React, { useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom'; // Import useParams
 
 const UploadDocuments = () => {
-  const { salonId } = useParams(); // Extract salonId from URL parameters
+  const { salonId } = useParams();// Get salonId from the route params
+  console.log("Fetched salonId from params:", salonId);// Extract salonId from URL parameters
   const [documents, setDocuments] = useState({
     cosmetologyLicense: null,
     idProof: null,

@@ -59,7 +59,7 @@ const AddSalon = () => {
 
         // After salon is successfully registered, redirect to document upload page
         const salonId = successData.id; // Assuming you get the salon ID from the response
-        navigate(`/upload-documents/${salonId}`); // Redirect using useNavigate hook
+        navigate(`/upload-documents-page/${salonId}`); // Redirect using useNavigate hook
       }
     } catch (error) {
       console.error("Error during API request:", error);
