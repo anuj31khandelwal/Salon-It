@@ -3,13 +3,20 @@ import { Link, useNavigate } from 'react-router-dom';
 
 function Navbar() {
   const [isLoggedIn, setIsLoggedIn] = useState(false); // State to track login status
+  const [userData, setUserData] = useState(null);
   const navigate = useNavigate();
 
   // Check login status on component mount and when localStorage changes
   useEffect(() => {
     const checkLoginStatus = () => {
-      const userData = localStorage.getItem('userData'); // Assuming login data is stored in localStorage
-      setIsLoggedIn(!!userData); // Convert to boolean
+      const userData = localStorage.getItem('userData');
+      if (userData) {
+              setIsLoggedIn(true);
+              setUserData(JSON.parse(userData)); // Parse user data
+            } else {
+              setIsLoggedIn(false);
+              setUserData(null);
+            }
     };
 
     checkLoginStatus();
@@ -27,6 +34,7 @@ function Navbar() {
   const handleLogout = () => {
     localStorage.removeItem('userData'); // Clear user data
     setIsLoggedIn(false);
+        setUserData(null);
     navigate('/'); // Redirect to home page after logout
   };
 
@@ -42,7 +50,7 @@ function Navbar() {
           {isLoggedIn ? (
             <>
               <Link to="/orders" className="navbar-link">My Orders</Link>
-              <Link to="/profile" className="navbar-link">Profile</Link>
+              <Link to="/profile" className="navbar-link">Hello, {userData}!</Link>
               <button onClick={handleLogout} className="navbar-link">Logout</button>
             </>
           ) : (

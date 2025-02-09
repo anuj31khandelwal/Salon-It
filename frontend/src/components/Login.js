@@ -20,7 +20,8 @@ const LoginPage = () => {
         const userData = response.data; // Assuming the API sends back user data
         console.log("data sent:", userData);
         localStorage.setItem('userData', JSON.stringify(userData)); // Save user data to localStorage
-        navigate('/dashboard');
+        navigate('/');
+        window.location.reload();
       }
     } catch (error) {
       if (error.response && error.response.status === 401) {

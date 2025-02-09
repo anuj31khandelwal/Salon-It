@@ -88,9 +88,6 @@ function App() {
       }
     };
 
-
-
-
   const salonData = {
     name: "Glamour Studio",
     description: "Your one-stop shop for all beauty needs",

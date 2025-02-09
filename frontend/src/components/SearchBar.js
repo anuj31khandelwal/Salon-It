@@ -70,15 +70,18 @@ const SearchPage = () => {
         placeholder="Search by salon name"
         value={salon}
         onChange={(e) => setSalon(e.target.value)}
-      />
-      <select value={location} onChange={(e) => setLocation(e.target.value)}>
-        <option value="">Select a location</option>
-        {statesOfIndia.map((state, index) => (
-          <option key={index} value={state}>
-            {state}
-          </option>
-        ))}
-      </select>
+      /><select
+          className="location-input"
+          value={location}
+          onChange={(e) => setLocation(e.target.value)}
+        >
+          <option value="">Select a location</option>
+          {statesOfIndia.map((state, index) => (
+            <option key={index} value={state}>
+              {state}
+            </option>
+          ))}
+        </select>
       <input
         type="text"
         placeholder="Enter service"
