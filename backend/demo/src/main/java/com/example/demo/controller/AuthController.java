@@ -38,7 +38,7 @@ public class AuthController {
         if (userOptional.isPresent()) {
             User user = userOptional.get();
             if (passwordEncoder.matches(password, user.getPassword()) && userType.equals(user.getUserType())) {
-                return ResponseEntity.ok("Login successful!");
+                return ResponseEntity.ok(user.getUsername());
             } else {
                 return ResponseEntity.status(401).body("Invalid password or access for this role denied");
             }

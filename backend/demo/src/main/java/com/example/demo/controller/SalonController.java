@@ -80,14 +80,14 @@ public class SalonController {
         return ResponseEntity.ok(confirmedAppointment);
     }
 
-//    @GetMapping("/{salonId}/services")
-//    public ResponseEntity<ApiResponse<List<Service>>> getSalonServices(@PathVariable Long salonId) {
-//        List<Service> services = salonService.getSalonServices(salonId);
-//        return ResponseEntity.ok(new ApiResponse<>(true,
-//                "Services retrieved successfully",
-//                services,
-//                services.size()));
-//    }
+    @GetMapping("/{salonId}/services")
+    public ResponseEntity<ApiResponse<List<Service>>> getSalonServices(@PathVariable Long salonId) {
+        List<Service> services = salonService.getSalonServices(salonId);
+        return ResponseEntity.ok(new ApiResponse<>(true,
+                "Services retrieved successfully",
+                services,
+                services.size()));
+    }
     @GetMapping("/{id}")
     public ResponseEntity<Salon> getSalonById(@PathVariable Long id) {
         Salon salon = salonService.getSalonById(id);
@@ -97,14 +97,14 @@ public class SalonController {
         return ResponseEntity.ok(salon);
     }
 
-    @GetMapping("/{id}/services")
-    public ResponseEntity<List<Service>> getServicesBySalonId(@PathVariable Long id) {
-        List<Service> services = salonService.getServicesBySalonId(id);
-        if (services.isEmpty()) {
-            return ResponseEntity.noContent().build();
-        }
-        return ResponseEntity.ok(services);
-    }
+//    @GetMapping("/{id}/services")
+//    public ResponseEntity<List<Service>> getServicesBySalonId(@PathVariable Long id) {
+//        List<Service> services = salonService.getServicesBySalonId(id);
+//        if (services.isEmpty()) {
+//            return ResponseEntity.noContent().build();
+//        }
+//        return ResponseEntity.ok(services);
+//    }
 
     @PostMapping("/upload-documents/{salonId}")
     public ResponseEntity<?> uploadDocuments(@PathVariable Long salonId,

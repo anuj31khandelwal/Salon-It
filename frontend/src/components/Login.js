@@ -14,10 +14,13 @@ const LoginPage = () => {
     setErrorMessage('');
 
     try {
-      const response = await login(username, password, userType); // Call the login function
+      const response = await login(username, password, userType);
       if (response.status === 200) {
         console.log('Login successful!');
-        navigate('/home');
+        const userData = response.data; // Assuming the API sends back user data
+        console.log("data sent:", userData);
+        localStorage.setItem('userData', JSON.stringify(userData)); // Save user data to localStorage
+        navigate('/dashboard');
       }
     } catch (error) {
       if (error.response && error.response.status === 401) {

@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import Navbar from './components/Navbar';
 import AddSalon from './components/AddSalon';
 import Login from './components/Login';
+import Dashboard from './components/Dashboard';
 import Signin from './components/Signin';
 import SearchBar from './components/SearchBar';
 import SalonGrid from './components/SalonGrid';
@@ -112,6 +113,7 @@ function App() {
           <Route path="/search-bar" element={<SearchBar />} />
           <Route path="/search-results" element={<SearchResultsPage />} />
           <Route path="/login" element={<Login />} />
+          <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/signin" element={<Signin />} />
         </Routes>
         <main>
