@@ -1,6 +1,7 @@
 package org.example.controller;
 
 import org.example.dto.AppointmentDTO;
+import org.example.dto.BarberDashboardDTO;
 import org.example.entity.Appointments;
 import org.example.entity.Barber;
 import org.example.enums.AppointmentStatus;
@@ -10,6 +11,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -28,9 +30,44 @@ public class BarberController {
     }
 
     @GetMapping("/{barberId}/dashboard")
-    public ResponseEntity<String> getBarberDashboard(@PathVariable Long barberId) {
-        return ResponseEntity.ok("Barber dashboard data for ID: " + barberId);
+    public ResponseEntity<BarberDashboardDTO> getBarberDashboard(@PathVariable Long barberId) {
+        Optional<Barber> barberOptional = barberRepository.findById(barberId);
+
+        if (barberOptional.isPresent()) {
+            Barber barber = barberOptional.get();
+            LocalDateTime now = LocalDateTime.now();
+
+            List<Appointments> allAppointments = appointmentRepository.findByBarber(barber);
+
+            // Split appointments based on status and date
+            List<AppointmentDTO> pendingAppointments = allAppointments.stream()
+                    .filter(app -> app.getStatus() == AppointmentStatus.PENDING)
+                    .map(AppointmentDTO::new)
+                    .collect(Collectors.toList());
+
+            List<AppointmentDTO> upcomingAppointments = allAppointments.stream()
+                    .filter(app -> app.getStatus() == AppointmentStatus.CONFIRMED && app.getAppointmentTime().isAfter(now))
+                    .map(AppointmentDTO::new)
+                    .collect(Collectors.toList());
+
+            List<AppointmentDTO> pastAppointments = allAppointments.stream()
+                    .filter(app -> app.getAppointmentTime().isBefore(now))
+                    .map(AppointmentDTO::new)
+                    .collect(Collectors.toList());
+
+            // Build the dashboard DTO
+            BarberDashboardDTO dashboardDTO = new BarberDashboardDTO();
+            dashboardDTO.setPendingAppointments(pendingAppointments);
+            dashboardDTO.setUpcomingAppointments(upcomingAppointments);
+            dashboardDTO.setPastAppointments(pastAppointments);
+
+            return ResponseEntity.ok(dashboardDTO);
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(null);
+        }
     }
+
 
     @GetMapping("/{barberId}/allAppointments")
     public ResponseEntity<List<AppointmentDTO>> getBarberAppointments(@PathVariable Long barberId) {

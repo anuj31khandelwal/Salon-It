@@ -1,6 +1,9 @@
 package org.example.controller;
 
 import org.example.dto.AppointmentDTO;
+import org.example.dto.EarningsDTO;
+import org.example.dto.SalonDashboardDTO;
+import org.example.dto.StatusUpdateRequest;
 import org.example.entity.*;
 import org.example.enums.AppointmentStatus;
 import org.example.repository.*;
@@ -8,6 +11,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -55,9 +59,60 @@ public class SalonController {
 
 
     @GetMapping("/{salonId}/dashboard")
-    public ResponseEntity<String> getSalonDashboard(@PathVariable Long salonId) {
-        return ResponseEntity.ok("Salon dashboard for ID: " + salonId);
+    public ResponseEntity<SalonDashboardDTO> getSalonDashboard(@PathVariable Long salonId) {
+        Optional<Salon> salonOptional = salonRepository.findById(salonId);
+
+        if (salonOptional.isPresent()) {
+            Salon salon = salonOptional.get();
+            LocalDateTime now = LocalDateTime.now();
+
+            List<Appointments> allAppointments = appointmentRepository.findBySalon(salon);
+
+            // Split appointments based on status and date
+            List<AppointmentDTO> pendingAppointments = allAppointments.stream()
+                    .filter(app -> app.getStatus() == AppointmentStatus.PENDING)
+                    .map(AppointmentDTO::new)
+                    .collect(Collectors.toList());
+
+            List<AppointmentDTO> upcomingAppointments = allAppointments.stream()
+                    .filter(app -> app.getStatus() == AppointmentStatus.CONFIRMED && app.getAppointmentTime().isAfter(now))
+                    .map(AppointmentDTO::new)
+                    .collect(Collectors.toList());
+
+            List<AppointmentDTO> pastAppointments = allAppointments.stream()
+                    .filter(app -> app.getAppointmentTime().isBefore(now))
+                    .map(AppointmentDTO::new)
+                    .collect(Collectors.toList());
+
+            // Calculate earnings for different intervals
+            EarningsDTO earnings = new EarningsDTO(
+                    calculateEarnings(allAppointments, now.minusDays(7)),
+                    calculateEarnings(allAppointments, now.minusDays(30)),
+                    calculateEarnings(allAppointments, now.minusYears(1))
+            );
+
+            // Build the dashboard response
+            SalonDashboardDTO dashboardDTO = new SalonDashboardDTO(
+                    pendingAppointments,
+                    upcomingAppointments,
+                    pastAppointments,
+                    earnings
+            );
+
+            return ResponseEntity.ok(dashboardDTO);
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+        }
     }
+
+    private double calculateEarnings(List<Appointments> appointments, LocalDateTime startDate) {
+        return appointments.stream()
+                .filter(app -> app.getAppointmentTime().isAfter(startDate))
+                .filter(app -> app.getStatus() == AppointmentStatus.COMPLETED)
+                .mapToDouble(app -> app.getServiceItem().getPrice())
+                .sum();
+    }
+
 
     @PostMapping("/{salonId}/addBarber")
     public ResponseEntity<String> addBarber(@PathVariable Long salonId, @RequestBody Barber barberRequest) {
@@ -184,7 +239,7 @@ public class SalonController {
     @PutMapping("/{salonId}/appointments/{appointmentId}/status")
     public ResponseEntity<String> updateAppointmentStatus(@PathVariable Long salonId,
                                                           @PathVariable Long appointmentId,
-                                                          @RequestBody String status) {
+                                                          @RequestBody StatusUpdateRequest statusUpdateRequest) {
         Optional<Appointments> appointmentOptional = appointmentRepository.findById(appointmentId);
 
         if (appointmentOptional.isPresent()) {
@@ -192,17 +247,27 @@ public class SalonController {
 
             if (appointment.getSalon().getId() != salonId) {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                        .body("Appointment does not belong to Salon ID: " + salonId);
+                        .body("Appointment ID " + appointmentId + " does not belong to Salon ID: " + salonId);
             }
 
-            appointment.setStatus(AppointmentStatus.valueOf(status));
-            appointmentRepository.save(appointment);
+            try {
+                AppointmentStatus newStatus = AppointmentStatus.valueOf(statusUpdateRequest.getStatus().toUpperCase());
+                appointment.setStatus(newStatus);
+                appointmentRepository.save(appointment);
 
-            return ResponseEntity.ok("Appointment ID " + appointmentId + " status updated to: " + status);
+                return ResponseEntity.ok("Appointment ID " + appointmentId + " status updated to: " + newStatus);
+            } catch (IllegalArgumentException e) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                        .body("Invalid status value: " + statusUpdateRequest.getStatus() +
+                                ". Allowed values: PENDING, CONFIRMED, COMPLETED, CANCELLED");
+            }
+
         } else {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Appointment not found with ID: " + appointmentId);
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body("Appointment not found with ID: " + appointmentId);
         }
     }
+
 
 
 }

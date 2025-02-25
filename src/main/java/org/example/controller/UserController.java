@@ -1,5 +1,7 @@
 package org.example.controller;
 
+import org.example.dto.AppointmentDTO;
+import org.example.dto.UserDashboardDTO;
 import org.example.entity.Appointments;
 import org.example.enums.AppointmentStatus;
 import org.example.repository.UserRepository;
@@ -14,6 +16,7 @@ import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/users")
@@ -29,8 +32,33 @@ public class UserController {
     }
 
     @GetMapping("/{userId}/dashboard")
-    public ResponseEntity<String> getUserDashboard(@PathVariable Long userId) {
-        return ResponseEntity.ok("User dashboard data for ID: " + userId);
+    public ResponseEntity<UserDashboardDTO> getUserDashboard(@PathVariable Long userId) {
+        Optional<SalonUser> customerOptional = userRepository.findById(userId);
+
+        if (customerOptional.isPresent()) {
+            SalonUser customer = customerOptional.get();
+            LocalDateTime now = LocalDateTime.now();
+
+            List<Appointments> allAppointments = appointmentRepository.findByCustomer(customer);
+
+            // Split appointments into past and upcoming
+            List<AppointmentDTO> pastAppointments = allAppointments.stream()
+                    .filter(app -> app.getAppointmentTime().isBefore(now))
+                    .map(AppointmentDTO::new)
+                    .collect(Collectors.toList());
+
+            List<AppointmentDTO> upcomingAppointments = allAppointments.stream()
+                    .filter(app -> app.getAppointmentTime().isAfter(now))
+                    .map(AppointmentDTO::new)
+                    .collect(Collectors.toList());
+
+            // Prepare the dashboard response
+            UserDashboardDTO dashboardDTO = new UserDashboardDTO(pastAppointments, upcomingAppointments);
+
+            return ResponseEntity.ok(dashboardDTO);
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+        }
     }
 
     @PostMapping("/book/appointment")
