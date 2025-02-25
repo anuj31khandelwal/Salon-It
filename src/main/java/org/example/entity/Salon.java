@@ -1,6 +1,8 @@
 package org.example.entity;
 
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 
 import jakarta.persistence.Entity;
@@ -12,11 +14,13 @@ import java.util.List;
 
 @Entity
 @Table(name = "salons")
+@Getter
+@Setter
 public class Salon implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    private long id;
 
     @ManyToOne
     @JoinColumn(name = "owner_id", nullable = false)

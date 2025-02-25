@@ -110,7 +110,28 @@ public class AuthController {
     }
 
     @PutMapping("/profile/update")
-    public ResponseEntity<String> updateUserProfile() {
-        return ResponseEntity.ok("User profile updated");
+    public ResponseEntity<String> updateUserProfile(@RequestParam Long userId, @RequestBody SalonUser updatedUser) {
+        Optional<SalonUser> existingUserOptional = userRepository.findById(userId);
+
+        if (existingUserOptional.isPresent()) {
+            SalonUser existingUser = existingUserOptional.get();
+
+            // Update user details
+            existingUser.setName(updatedUser.getName());
+            existingUser.setEmail(updatedUser.getEmail());
+            existingUser.setPhoneNumber(updatedUser.getPhoneNumber());
+
+            // Update password if provided
+            if (updatedUser.getPassword() != null && !updatedUser.getPassword().isEmpty()) {
+                String encodedPassword = passwordEncoder.encode(updatedUser.getPassword());
+                existingUser.setPassword(encodedPassword);
+            }
+
+            userRepository.save(existingUser);
+            return ResponseEntity.ok("User profile updated successfully");
+        }
+
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found");
     }
+
 }

@@ -1,6 +1,8 @@
 package org.example.entity;
 
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
 import org.example.enums.AppointmentStatus;
 import org.example.enums.PaymentStatus;
 import org.hibernate.annotations.CreationTimestamp;
@@ -10,11 +12,18 @@ import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "appointments")
+@Getter
+@Setter
 public class Appointments implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    private long id;
+
+    @ManyToOne
+    @JoinColumn(name = "customer_id", nullable = false)
+    private SalonUser customer;
+
 
     @ManyToOne
     @JoinColumn(name = "salon_id", nullable = false)
