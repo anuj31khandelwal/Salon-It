@@ -1,9 +1,6 @@
 package org.example.controller;
 
-import org.example.dto.AppointmentDTO;
-import org.example.dto.AppointmentFailureResponse;
-import org.example.dto.SlotDTO;
-import org.example.dto.UserDashboardDTO;
+import org.example.dto.*;
 import org.example.entity.*;
 import org.example.enums.AppointmentStatus;
 import org.example.repository.BarberRepository;
@@ -77,27 +74,6 @@ public class UserController {
         }
     }
 
-//    @PostMapping("/book/appointment")
-//    public ResponseEntity<String> bookAppointment(@RequestBody Appointments appointment) {
-//        long userId = appointment.getCustomer().getId();
-//        Optional<SalonUser> userOptional = userRepository.findById(userId);
-//
-//        if (userOptional.isPresent()) {
-//            SalonUser user = userOptional.get();
-//
-//            // Link the appointment to the user
-//            appointment.setCustomer(user);
-//            appointment.setStatus(AppointmentStatus.valueOf("PENDING")); // Default status
-//
-//            // Save the appointment
-//            appointmentRepository.save(appointment);
-//
-//            return ResponseEntity.ok("Appointment booked successfully for user ID: " + userId);
-//        }
-//
-//        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found");
-//    }
-
     @GetMapping("/{userId}/appointments")
     public ResponseEntity<List<Appointments>> getUserAppointments(@PathVariable Long userId) {
         Optional<SalonUser> userOptional = userRepository.findById(userId);
@@ -149,11 +125,12 @@ public class UserController {
     // Get available slots for a barber
     @GetMapping("/barber/{barberId}/available")
     public ResponseEntity<List<SlotDTO>> getAvailableSlotsForBarber(
+            @RequestParam Long salonId,
             @PathVariable Long barberId,
             @RequestParam LocalDate date,
             @RequestParam int duration) {
 
-        List<SlotDTO> availableSlots = slotService.getAvailableSlotsForBarber(barberId, date, duration);
+        List<SlotDTO> availableSlots = slotService.getOrGenerateSlotsForBarber(salonId, barberId, date, duration);;
         return ResponseEntity.ok(availableSlots);
     }
 
@@ -164,22 +141,27 @@ public class UserController {
             @RequestParam LocalDate date,
             @RequestParam int duration) {
 
-        List<SlotDTO> availableSlots = slotService.getAvailableSlotsForSalon(salonId, date, duration);
+        List<SlotDTO> availableSlots = slotService.getOrGenerateSlotsForSalon(salonId, date, duration);
         return ResponseEntity.ok(availableSlots);
     }
 
-    // Book a slot
-    @PostMapping("/{slotId}/book")
-    public ResponseEntity<String> bookSlot(
-            @PathVariable Long slotId,
-            @RequestParam Long customerId,
-            @RequestParam Long serviceId) {
-
+    @PostMapping("/book")
+    public ResponseEntity<BookingResponse> bookSlots(@RequestBody BookingRequest bookingRequest) {
         try {
-            slotService.bookSlot(slotId, customerId, serviceId);
-            return ResponseEntity.ok("Slot booked successfully, appointment created!");
+            BookingResponse response = slotService.bookSlots(
+                    bookingRequest.getSlotIds(),
+                    bookingRequest.getCustomerId(),
+                    bookingRequest.getServiceIds()
+            );
+
+            if (response.getErrorMessage() != null) {
+                return ResponseEntity.status(HttpStatus.CONFLICT).body(response); // Handle conflict
+            }
+
+            return ResponseEntity.ok(response);
         } catch (RuntimeException e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new BookingResponse("An unexpected error occurred: " + e.getMessage()));
         }
     }
 

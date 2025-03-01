@@ -14,8 +14,8 @@ public interface SlotRepository extends JpaRepository<Slot, Long> {
 
     List<Slot> findBySalonIdAndStartTimeBetweenAndIsBookedFalse(Long salonId, LocalDateTime startTime, LocalDateTime endTime);
 
-    @Query("SELECT s FROM Slot s WHERE s.salon.id = :salonId AND s.isBooked = false AND s.startTime >= :startTime AND s.endTime <= :endTime")
-    List<Slot> findAvailableSlotsForSalon(@Param("salonId") Long salonId, @Param("startTime") LocalDateTime startTime, @Param("endTime") LocalDateTime endTime);
+//    @Query("SELECT s FROM Slot s WHERE s.salon.id = :salonId AND s.isBooked = false AND s.startTime >= :startTime AND s.endTime <= :endTime")
+//    List<Slot> findAvailableSlotsForSalon(@Param("salonId") Long salonId, @Param("startTime") LocalDateTime startTime, @Param("endTime") LocalDateTime endTime);
 
     @Query("SELECT s FROM Slot s WHERE s.barber.id = :barberId AND s.isBooked = false AND s.startTime >= :startTime AND s.endTime <= :endTime")
     List<Slot> findByBarberIdAndStartTimeBetweenAndIsBookedFalse(@Param("barberId") Long barberId, @Param("startTime") LocalDateTime startTime,@Param("endTime") LocalDateTime endTime);
