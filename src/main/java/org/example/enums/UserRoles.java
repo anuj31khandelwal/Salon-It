@@ -1,5 +1,5 @@
 package org.example.enums;
 
 public enum UserRoles {
-    OWNER,ADMIN,USER
+    OWNER,ADMIN,USER,BARBER
 }
