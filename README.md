@@ -1,4 +1,4 @@
-### Salon-It! API Documentation
+# Salon-It! API Documentation
 
 ## Add User:
 ```
