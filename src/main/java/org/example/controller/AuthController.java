@@ -8,6 +8,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 import java.util.regex.Pattern;
 
@@ -64,35 +66,40 @@ public class AuthController {
 
 
     @PostMapping("/login")
-    public ResponseEntity<String> loginUser(@RequestBody LoginRequest loginRequest) {
+    public ResponseEntity<Map<String, Object>> loginUser(@RequestBody LoginRequest loginRequest) {
         String username = loginRequest.getUsername();
         String password = loginRequest.getPassword();
 
-        // Check if username is email or phone number
         Optional<SalonUser> userOptional;
 
+        // Check if username is email or phone number
         if (Pattern.matches("^[A-Za-z0-9+_.-]+@(.+)$", username)) {
             userOptional = userRepository.findByEmail(username);
         } else if (Pattern.matches("^\\d{10}$", username)) {
             userOptional = userRepository.findByPhoneNumber(username);
         } else {
-            return ResponseEntity.badRequest().body("Invalid email or phone number format");
+            return ResponseEntity.badRequest().body(Map.of("error", "Invalid email or phone number format"));
         }
 
         // Check if user exists
         if (userOptional.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("User not found");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("error", "User not found"));
         }
 
         SalonUser user = userOptional.get();
 
         // Validate password
         if (!passwordEncoder.matches(password, user.getPassword())) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid password");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("error", "Invalid password"));
         }
 
-        // Generate JWT (if using token-based auth) or return success
-        return ResponseEntity.ok("User logged in successfully");
+        // Return user details
+        Map<String, Object> response = new HashMap<>();
+        response.put("message", "User logged in successfully");
+        response.put("customerId", user.getId());
+        response.put("customerName",user.getName());
+
+        return ResponseEntity.ok(response);
     }
 
 

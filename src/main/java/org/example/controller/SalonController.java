@@ -1,9 +1,6 @@
 package org.example.controller;
 
-import org.example.dto.AppointmentDTO;
-import org.example.dto.EarningsDTO;
-import org.example.dto.SalonDashboardDTO;
-import org.example.dto.StatusUpdateRequest;
+import org.example.dto.*;
 import org.example.entity.*;
 import org.example.enums.AppointmentStatus;
 import org.example.repository.*;
@@ -12,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -112,7 +110,6 @@ public class SalonController {
                 .mapToDouble(app -> app.getServiceItem().getPrice())
                 .sum();
     }
-
 
     @PostMapping("/{salonId}/addBarber")
     public ResponseEntity<String> addBarber(@PathVariable Long salonId, @RequestBody Barber barberRequest) {
@@ -267,7 +264,60 @@ public class SalonController {
                     .body("Appointment not found with ID: " + appointmentId);
         }
     }
+    @GetMapping("/searchByLocation")
+    public ResponseEntity<List<SalonDetailsDTO>> searchSalonsByLocation(@RequestParam String location) {
+        List<Salon> salons = salonRepository.findSalonsByLocation(location);
+        List<SalonDetailsDTO> salonDetails = salons.stream().map(this::mapToDTO).collect(Collectors.toList());
+        return ResponseEntity.ok(salonDetails);
+    }
 
+    private SalonDetailsDTO mapToDTO(Salon salon) {
+        SalonDetailsDTO dto = new SalonDetailsDTO();
+        dto.setId(salon.getId());
+        dto.setName(salon.getName());
+        dto.setAddress(salon.getAddress());
+        dto.setOpeningTime(String.valueOf(salon.getOpeningTime()));
+        dto.setClosingTime(String.valueOf(salon.getClosingTime()));
+        dto.setPhoneNumber(salon.getPhoneNumber());
+        return dto;
+    }
 
+    @GetMapping("/{salonId}")
+    public ResponseEntity<SalonDetailsDTO> getSalonById(@PathVariable long salonId) {
+        Salon salon = salonRepository.findById(salonId)
+                .orElseThrow(() -> new RuntimeException("Salon not found with ID: " + salonId));
 
+        SalonDetailsDTO salonDetails = mapToDTO(salon);
+        return ResponseEntity.ok(salonDetails);
+    }
+
+    @GetMapping("/{salonId}/services")
+    public ResponseEntity<List<ServiceItemDTO>> getServicesBySalonId(@PathVariable long salonId) {
+        List<ServiceItem> services = serviceRepository.findBySalonId(salonId);
+
+        List<ServiceItemDTO> serviceDTOs = services.stream()
+                .map(this::mapServiceItemToDTO)
+                .collect(Collectors.toList());
+
+        return ResponseEntity.ok(serviceDTOs);
+    }
+
+    private ServiceItemDTO mapServiceItemToDTO(ServiceItem service) {
+        ServiceItemDTO dto = new ServiceItemDTO();
+        dto.setId(service.getId());
+        dto.setName(service.getName());
+        dto.setPrice(service.getPrice());
+        dto.setDuration(service.getDuration());
+        return dto;
+    }
+
+    @GetMapping("/barbers")
+    public ResponseEntity<List<String>> getAllBarbers(@RequestParam long salonId){
+        List<String> barberNames= new ArrayList<String>();
+        List<Barber> barbers = barberRepository.findBySalonId(salonId);
+        for(Barber barber:barbers) {
+            barberNames.add(barber.getName());
+        }
+        return ResponseEntity.ok(barberNames);
+    }
 }
