@@ -10,6 +10,7 @@ import java.util.List;
 @Setter
 @AllArgsConstructor
 public class SalonDashboardDTO {
+    private String salonName;
     private List<AppointmentDTO> pendingAppointments;
     private List<AppointmentDTO> upcomingAppointments;
     private List<AppointmentDTO> pastAppointments;

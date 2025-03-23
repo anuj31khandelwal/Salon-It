@@ -18,8 +18,7 @@ import java.time.LocalDateTime;
 public class Barber implements Serializable {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+    private Long id;  // This will use the SalonUser ID
 
     @ManyToOne
     @JoinColumn(name = "salon_id", nullable = false)

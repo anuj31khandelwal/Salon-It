@@ -7,11 +7,10 @@ import org.example.repository.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @RestController
@@ -33,27 +32,33 @@ public class SalonController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<String> registerSalon(@RequestBody Salon salonRequest) {
+    public ResponseEntity<Map<String, Object>> registerSalon(@RequestBody Salon salonRequest) {
+        Map<String, Object> response = new HashMap<>();
         try {
             // Check if the owner exists
             Optional<SalonUser> ownerOptional = userRepository.findById(salonRequest.getOwner().getId());
-
             if (ownerOptional.isEmpty()) {
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Owner not found");
+                response.put("message", "Owner not found");
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
             }
 
             SalonUser owner = ownerOptional.get();
             salonRequest.setOwner(owner);
 
             // Save the salon
-            salonRepository.save(salonRequest);
+            Salon savedSalon = salonRepository.save(salonRequest);
 
-            return ResponseEntity.ok("Salon registered successfully with ID: " + salonRequest.getId());
+            response.put("message", "Salon registered successfully");
+            response.put("salonId", savedSalon.getId());
+
+            return ResponseEntity.ok(response);
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("Failed to register salon: " + e.getMessage());
+            response.put("message", "Failed to register salon");
+            response.put("error", e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
         }
     }
+
 
 
     @GetMapping("/{salonId}/dashboard")
@@ -91,6 +96,7 @@ public class SalonController {
 
             // Build the dashboard response
             SalonDashboardDTO dashboardDTO = new SalonDashboardDTO(
+                    salon.getName(),
                     pendingAppointments,
                     upcomingAppointments,
                     pastAppointments,
@@ -109,6 +115,36 @@ public class SalonController {
                 .filter(app -> app.getStatus() == AppointmentStatus.COMPLETED)
                 .mapToDouble(app -> app.getServiceItem().getPrice())
                 .sum();
+    }
+
+    @PutMapping("/{salonId}/updateBarberStatus/{barberId}")
+    public ResponseEntity<String> updateBarberStatus(
+            @PathVariable Long salonId,
+            @PathVariable Long barberId,
+            @RequestBody Map<String, Boolean> requestBody) {
+        try {
+            Optional<Salon> salonOptional = salonRepository.findById(salonId);
+            Optional<Barber> barberOptional = barberRepository.findById(barberId);
+
+            if (salonOptional.isEmpty() || barberOptional.isEmpty()) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Salon or Barber not found");
+            }
+
+            Barber barber = barberOptional.get();
+            Boolean isAvailable = requestBody.get("isAvailable"); // Ensure we're getting a Boolean value
+
+            if (isAvailable == null) {
+                return ResponseEntity.badRequest().body("Invalid request: 'isAvailable' field is missing");
+            }
+
+            barber.setAvailable(isAvailable); // Update the availability
+            barberRepository.save(barber); // Save the updated status
+
+            return ResponseEntity.ok("Barber availability updated successfully");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Failed to update barber status: " + e.getMessage());
+        }
     }
 
     @PostMapping("/{salonId}/addBarber")
@@ -132,6 +168,7 @@ public class SalonController {
                     .body("Failed to add barber: " + e.getMessage());
         }
     }
+
 
     @DeleteMapping("/{salonId}/barbers/{barberId}")
     public ResponseEntity<String> removeBarber(@PathVariable Long salonId, @PathVariable Long barberId) {
@@ -248,11 +285,53 @@ public class SalonController {
             }
 
             try {
+                AppointmentStatus currentStatus = appointment.getStatus();
                 AppointmentStatus newStatus = AppointmentStatus.valueOf(statusUpdateRequest.getStatus().toUpperCase());
+
+                // Check if the current status is CANCELLED (cannot be modified)
+                if (currentStatus == AppointmentStatus.CANCELLED) {
+                    return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                            .body("Cancelled appointments cannot be modified");
+                }
+
+                // Enforce status transition rules
+                if (newStatus == AppointmentStatus.CANCELLED) {
+                    // Allow cancellation from any non-CANCELLED status
+                    if (currentStatus == AppointmentStatus.COMPLETED) {
+                        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                                .body("Completed appointments cannot be cancelled");
+                    }
+                } else {
+                    // For status progression (non-cancellation), enforce proper sequence
+                    boolean validTransition = false;
+
+                    switch (currentStatus) {
+                        case PENDING:
+                            validTransition = (newStatus == AppointmentStatus.CONFIRMED);
+                            break;
+                        case CONFIRMED:
+                            validTransition = (newStatus == AppointmentStatus.COMPLETED);
+                            break;
+                        case COMPLETED:
+                            // Completed appointments cannot change status
+                            validTransition = false;
+                            break;
+                        default:
+                            validTransition = false;
+                    }
+
+                    if (!validTransition) {
+                        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                                .body("Invalid status transition: " + currentStatus + " → " + newStatus);
+                    }
+                }
+
+                // Apply status change
                 appointment.setStatus(newStatus);
                 appointmentRepository.save(appointment);
 
                 return ResponseEntity.ok("Appointment ID " + appointmentId + " status updated to: " + newStatus);
+
             } catch (IllegalArgumentException e) {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                         .body("Invalid status value: " + statusUpdateRequest.getStatus() +
@@ -264,6 +343,7 @@ public class SalonController {
                     .body("Appointment not found with ID: " + appointmentId);
         }
     }
+
     @GetMapping("/searchByLocation")
     public ResponseEntity<List<SalonDetailsDTO>> searchSalonsByLocation(@RequestParam String location) {
         List<Salon> salons = salonRepository.findSalonsByLocation(location);
@@ -311,13 +391,74 @@ public class SalonController {
         return dto;
     }
 
-    @GetMapping("/barbers")
-    public ResponseEntity<List<String>> getAllBarbers(@RequestParam long salonId){
-        List<String> barberNames= new ArrayList<String>();
+    @GetMapping("/barbers/{salonId}")
+    public ResponseEntity<List<Map<String, Object>>> getAllBarbers(@PathVariable long salonId) {
+        List<Map<String, Object>> barberList = new ArrayList<>();
         List<Barber> barbers = barberRepository.findBySalonId(salonId);
-        for(Barber barber:barbers) {
-            barberNames.add(barber.getName());
+
+        for (Barber barber : barbers) {
+            Map<String, Object> barberInfo = new HashMap<>();
+            barberInfo.put("id", barber.getId());
+            barberInfo.put("name", barber.getName());
+            barberList.add(barberInfo);
         }
-        return ResponseEntity.ok(barberNames);
+
+        return ResponseEntity.ok(barberList);
     }
+
+    @PostMapping("/upload-documents/{salonId}")
+    public ResponseEntity<?> uploadDocuments(@PathVariable Long salonId,
+                                             @RequestParam("cosmetologyLicense") MultipartFile cosmetologyLicense,
+                                             @RequestParam("idProof") MultipartFile idProof,
+                                             @RequestParam("taxId") MultipartFile taxId,
+                                             @RequestParam("bankAccountDetails") MultipartFile bankAccountDetails,
+                                             @RequestParam("serviceMenu") MultipartFile serviceMenu,
+                                             @RequestParam("bestWorkPhotos") MultipartFile bestWorkPhotos) {
+
+        // Process and save documents (skip actual file saving for now)
+        // You can implement actual file storage logic later
+        boolean isDocumentsUploaded = saveDocuments(salonId, cosmetologyLicense, idProof, taxId, bankAccountDetails, serviceMenu, bestWorkPhotos);
+
+        if (isDocumentsUploaded) {
+            // Generate a reference ID after successful document upload
+            String referenceId = String.valueOf(salonId);
+
+            // Save the reference ID to the salon record (you can implement this method in salonService)
+
+
+            // Return the reference ID in the response
+            return ResponseEntity.ok(referenceId);
+        } else {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Failed to upload documents");
+        }
+    }
+
+    // Temporary method to save the uploaded documents (you can expand this with actual logic)
+    private boolean saveDocuments(Long salonId, MultipartFile cosmetologyLicense, MultipartFile idProof,
+                                  MultipartFile taxId, MultipartFile bankAccountDetails,
+                                  MultipartFile serviceMenu, MultipartFile bestWorkPhotos) {
+        // For now, just return true as a placeholder for actual logic
+        return true;
+    }
+
+    // Temporary method to generate reference ID (you can implement your own ID generation logic)
+    private String generateReferenceId() {
+        return "REF-" + System.currentTimeMillis();  // Example reference ID
+    }
+
+    @GetMapping("/allSalons/{userId}")
+    public ResponseEntity<List<SalonDetailsDTO>> getAllSalonsOfOwner(@PathVariable Long userId) {
+        List<Salon> salons = salonRepository.findSalonsByOwnerId(userId);
+
+        if (salons == null || salons.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Collections.emptyList());
+        }
+
+        List<SalonDetailsDTO> salonDTOs = salons.stream()
+                .map(SalonDetailsDTO::new)
+                .collect(Collectors.toList());
+
+        return ResponseEntity.ok(salonDTOs);
+    }
+
 }

@@ -98,6 +98,7 @@ public class AuthController {
         response.put("message", "User logged in successfully");
         response.put("customerId", user.getId());
         response.put("customerName",user.getName());
+        response.put("customerType",user.getRole());
 
         return ResponseEntity.ok(response);
     }
